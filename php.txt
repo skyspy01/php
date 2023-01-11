@@ -1,0 +1,258 @@
+create.php
+<html>
+<body>
+<?php
+$con = mysqli_connect('localhost','root','');
+if(!$con){  
+	 die('Error in Connection'.mysqli_error()); 
+}  else { 
+echo "Connection to server was successufull";
+}    
+$dbname = "mydb"; 
+  $qry = "CREATE DATABASE $dbname";   
+mysqli_query($con , $qry);     
+echo "<br> Database Created with name $dbname ";     
+ //selecting data base   
+$sel = mysqli_select_db($con , $dbname);    
+if($sel)  
+echo "<br> Database $dbname is selected successfully";   
+else 
+echo " <br> Database $dbname not selected";   
+$qry1 = "CREATE TABLE login2 ( uname varchar(40) NOT NULL , pword varchar(20) NOT NULL)";  
+$tab = mysqli_query($con , $qry1);   
+if($tab)  
+ echo "<br> Login Table created"; 
+else  
+echo "<br> Login Table Not created";  
+mysqli_close($con);  ?>
+</body>
+</html>
+
+
+
+-------------------------
+
+
+login.php
+<html>
+<body>
+<form name="f2" method="post" action="insertuser.php">
+<center>
+<table border="2" >
+<caption style="color:red"> Register Window </caption>
+<tr><td> User Name :</td><td><input type="text" name="un" size=30 ></td></tr>
+<tr><td> Password : </td><td><input type="password" name="pw" size=30 ></td></tr>
+<tr><td align="left" ><input type="Submit" value="Insert User Details">&nbsp;&nbsp;    <td>
+<a href="displayusers.php"> Display Users </a>
+<a style="color:red" href="verifyuser.php">&nbsp;
+Existing User Verify </a></td></td></tr>
+<tr><td><a href="updateform.php"> Update Password </td>
+<td><a href="deleteform.php"> Delete User </a></td></tr>
+<tr><td align="right"><input type="reset" value="Clear"></td><td></td></tr>
+</table>
+</center>
+</form>
+</body>
+</html>
+
+
+---------------------------------
+insertuser.php
+<html>
+<body>
+<?php   $con = mysqli_connect('localhost','root','','mydb'); 
+  if(!$con)
+   { 
+   die('Error in Connection'.mysqli_error());
+   }
+   $sel = mysqli_select_db($con , 'mydb');   
+if(!$sel) 
+  { 
+   echo " <br> Database not selected"; 
+  }  
+    $name = $_POST['un'];
+$pwd = $_POST['pw']; 
+$qry2 = "INSERT INTO login2(uname,pword) VALUES('$name' , '$pwd')";  
+$ins = mysqli_query($con , $qry2); 
+if(!$ins)   
+echo "<br> Login data Not inserted successfully";   
+echo "<br> User $name data inserted successfully";  
+echo"<br><a href='login.php'>Move to Home Page </a>";   
+mysqli_close($con);  
+?>
+</body>
+</html>
+
+---------------------------------------
+
+displayusers.php
+
+<html>
+<body>
+<?php   $con = mysqli_connect('localhost','root','','mydb');
+   if(!$con)
+   {
+    die('Error in Connection'.mysqli_error());
+   }
+   $sel = mysqli_select_db($con , 'mydb');   
+if(!$sel)  
+echo " <br> Database not selected"; 
+$res = mysqli_query($con ,"SELECT * From login2");  
+echo "<center>";  
+echo "<table border=2>"; 
+echo "<caption> Users Details </caption>";  
+echo "<tr><th> USER NAME </th><th> PASSWORD </th></tr> "; 
+while($row = mysqli_fetch_array($res)) 
+{ 
+ echo "<tr><td> "; 
+echo $row['uname']; 
+echo "</td>";    
+echo " <td> ";
+echo $row['pword'];   
+echo "</td></tr>"; 
+} 
+  echo "</table>"; 
+  echo "</ceneter>";   
+echo"<br><a href='login.php'>Move to Home Page </a>";   
+mysqli_close($con);   ?>
+</body>
+</html>
+
+
+
+
+-----------------------------------------
+
+updateform.php
+<html>
+<body>
+<form name="f2" method="post" action="update.php">
+<center>
+<table border="2" >
+<caption style="color:red"> Register Window </caption>
+<tr><td> User Name :</td><td><input type="text" name="unn" size=30 ></td></tr>
+<tr><td> Old Password : </td><td><input type="password" name="opw" size=30 ></td></tr><tr><td> New Password : </td><td><input type="password" name="npw" size=30 ></td></tr>
+<tr><td></td><td align="left" ><input type="Submit" value="UPDATE">&nbsp;&nbsp;      <input type="reset" value="Clear"></td></tr>
+</table>
+</center>
+</form>
+</body>
+</html>
+
+
+------------------------------------
+
+
+
+update.php
+<html>
+<body>
+<?php   
+$con = mysqli_connect('localhost','root','','mydb');  
+ if(!$con)   {   
+ die('Error in Connection'.mysqli_error());  
+ }    
+  $sel = mysqli_select_db($con , 'mydb');  
+ if(!$sel)  
+  echo "<br> Database is selected successfully";   //Getting form Data
+   $un = $_POST['unn']; 
+$old = $_POST['opw'];   
+$ne = $_POST['npw'];  
+mysqli_query($con ,"UPDATE login2 SET pword='$ne' WHERE pword='$old'");  
+echo "<br>Updated User Data Successfully";  
+echo"<br><a href='login.php'>Move to Home Page </a>";   
+mysqli_close($con);   ?>
+</body>
+</html>
+
+
+
+
+--------------------------------
+
+
+deleteform.php
+<html><body>
+<form name="f2" method="post" action="deleteuser.php"><center>
+<table border="2" ><caption style="color:red"> Register Window </caption>
+<tr><td> User Name :</td><td><input type="text" name="user" size=30 ></td></tr>
+<tr><td align="left" ><input type="Submit" value="Delete">&nbsp;&nbsp;  
+<input type="reset" value="Clear"></td></tr>
+</table>
+</center>
+</form>
+</body>
+</html>
+
+--------------------------------
+
+
+
+deleteuser.php
+<html>
+<body>
+<?php  
+ $con = mysqli_connect('localhost','root','','mydb');   
+if(!$con)  
+ {  
+  die('Error in Connection'.mysqli_error());
+   } 
+  $sel = mysqli_select_db($con , 'mydb');   
+if(!$sel)  
+  echo " <br> Database not selected";   
+$name = $_POST['user'];  
+ mysqli_query($con ,"DELETE FROM login2 WHERE uname='$name'"); 
+  echo "<br> Deleted User Data Successfully ";  
+ echo"<br><a href='login.php'>Move to Home Page </a>";   mysqli_close($con);  ?>
+</body>
+</html>
+
+
+
+-----------------------------
+
+
+
+
+verifyuser.php
+<html>
+<body>
+<form name="f2" method="post" action="verify.php">
+<center><table border="2" ><caption style="color:red"> verify user </caption>
+<tr><td> User Name :</td><td><input type="text" name="un" size=30 required="required"></td></tr>
+<tr><td> Password : </td><td><input type="password" name="pw" size=30 required="required"></td></tr>
+<tr><td align="left" colspan=2><input type="Submit" value="verify me"></tr>
+</table>
+</center>
+</form>
+</body>
+</html>
+
+verify.php
+<html>
+<body>
+<?php     
+$name=$_POST['un'];  
+$pwd=$_POST['pw'];
+   $con = mysqli_connect('localhost','root','','mydb'); 
+if(!$con) 
+{ 
+die('Error in Connection'.mysqli_error());
+} 
+$sel = mysqli_select_db($con , 'mydb');  
+if(!$sel)  
+echo " <br> Database not selected";  
+$res = mysqli_query($con ,"SELECT * From login2");   
+   while($row = mysqli_fetch_array($res)) 
+{
+if(strcmp($row['uname'],$name)==0 && strcmp($row['pword'],$pwd)==0)   
+{   
+ echo "Welcome $name"; 
+break; 
+}
+   }
+echo"<br><a href='login.php'>Move to Home Page </a>";   mysqli_close($con);   ?>
+</body>
+</html
+
+-----------------------------------
